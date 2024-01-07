@@ -21,7 +21,12 @@ import ShopCartItem from "../../component/ShopCart/ShopCartItem";
 import VoucherModal from "../ShopCart/VoucherModal";
 import CommonUtils from "../../utils/CommonUtils";
 import { EXCHANGE_RATES } from "../../utils/constant";
-import { connectToMetaMask, convertETH, getEth, sendTransaction } from "../../utils/utils";
+import {
+  connectToMetaMask,
+  convertETH,
+  getEth,
+  sendTransaction,
+} from "../../utils/utils";
 function OrderHomePage(props) {
   const dispatch = useDispatch();
   const [dataAddressUser, setdataAddressUser] = useState([]);
@@ -33,8 +38,11 @@ function OrderHomePage(props) {
   const [priceEth, setPriceEth] = useState(0);
   const [totalConvertETH, settotalConvertETH] = useState();
   const [displayETH, setDisplayETH] = useState();
+  const [totalPriceForETH, setTotalPriceForETH] = useState(0);
+
   let price = 0;
   let total = 0;
+
   const [stt, setstt] = useState(0);
   let dataCart = useSelector((state) => state.shopcart.listCartItem);
   let dataVoucher = useSelector((state) => state.shopcart.dataVoucher);
@@ -70,6 +78,15 @@ function OrderHomePage(props) {
   }, []);
 
   useEffect(() => {
+    setTotalPriceForETH(
+      dataVoucher && dataVoucher.voucherData
+        ? totalPriceDiscount(price, dataVoucher) + priceShip
+        : price + +priceShip
+    );
+  }, [dataVoucher, price, priceShip, dataTypeShip]);
+  
+
+  useEffect(() => {
     const fetchData = async () => {
       try {
         const ethereumData = await getEth();
@@ -85,6 +102,13 @@ function OrderHomePage(props) {
     fetchData();
   }, []);
 
+  useEffect(() => {
+    // Gọi handleMetamask khi priceShip thay đổi
+    if (activeTypeOnlPayment === 3) {
+      handleMetamask();
+    }
+  }, [priceShip]);
+  
   let loadDataAddress = async (userId) => {
     let res = await getAllAddressUserByUserIdService(userId);
     if (res && res.errCode === 0) {
@@ -136,24 +160,34 @@ function OrderHomePage(props) {
         (price * discount.voucherData.typeVoucherOfVoucherData.value) / 100 >
         discount.voucherData.typeVoucherOfVoucherData.maxValue
       ) {
-        const result = price - discount.voucherData.typeVoucherOfVoucherData.maxValue;
+        const result =
+          price - discount.voucherData.typeVoucherOfVoucherData.maxValue;
         settotalConvertETH(result);
         return result;
       } else {
-        const result = price - (price * discount.voucherData.typeVoucherOfVoucherData.value) / 100;
+        const result =
+          price -
+          (price * discount.voucherData.typeVoucherOfVoucherData.value) / 100;
         settotalConvertETH(result);
         return result;
       }
     } else {
-      const result = price - discount.voucherData.typeVoucherOfVoucherData.maxValue;
+      const result =
+        price - discount.voucherData.typeVoucherOfVoucherData.maxValue;
       settotalConvertETH(result);
       return result;
     }
   };
-
   let handleChooseTypeShip = (item) => {
     dispatch(ChooseTypeShipStart(item));
     setpriceShip(item.price);
+  
+    // Cập nhật giá mới của đơn vị vận chuyển
+    setTotalPriceForETH(
+      dataVoucher && dataVoucher.voucherData
+        ? totalPriceDiscount(price, dataVoucher) + item.price
+        : price + +item.price
+    );
   };
   let fetchExchangeRate = async () => {
     let res = await getExchangeRate();
@@ -162,17 +196,40 @@ function OrderHomePage(props) {
 
   let handleMetamask = async () => {
     await setactiveTypeOnlPayment(3);
-    await connectToMetaMask();
-
     setDisplayETH(
-      convertETH(priceEth, 450000, console.log(450000, priceEth))
-    );
+        convertETH(
+          priceEth,
+          totalPriceForETH,
+          console.log(totalPriceForETH, priceEth)
+        )
+      );
+    await connectToMetaMask();
+    
   };
   console.log(displayETH);
-
-  let handleSaveOrderETH = () =>{
-    sendTransaction(displayETH);
-  }
+  let handleSaveOrderETH = async () => {
+    if (!dataTypeShip.id) {
+        toast.error("Chưa chọn đơn vị vận chuyển");}
+        else{
+    try {
+      // Gửi giao dịch thông qua MetaMask
+      const confirmation = await sendTransaction(displayETH);
+  
+      // Kiểm tra xem người dùng đã xác nhận giao dịch chưa
+      if (confirmation) {
+        // Nếu người dùng xác nhận, thực hiện hàm handleSaveOrder()
+        await handleSaveOrder();
+      } else {
+        console.log("lỗi")// Người dùng từ chối, không thực hiện gì cả hoặc có thể xử lý theo nhu cầu
+        // Ở đây không thực hiện hành động nào khi từ chối
+      }
+    } catch (error) {
+      // Xử lý lỗi nếu có
+      console.error("Có lỗi khi gửi giao dịch:", error);
+      // Có thể thông báo cho người dùng về lỗi xảy ra
+    }}
+  };
+  
 
   let handleSaveOrder = async () => {
     if (!dataTypeShip.id) {
@@ -187,7 +244,7 @@ function OrderHomePage(props) {
         result.push(object);
       });
 
-      if (activeTypePayment == 0) {
+      if (activeTypePayment == 0 || activeTypePayment === 1 && activeTypeOnlPayment === 3) {
         let res = await createNewOrderService({
           orderdate: Date.now(),
           addressUserId: addressUserId,
@@ -582,26 +639,32 @@ function OrderHomePage(props) {
               <div className="box-flex">
                 <div className="head">Tổng thanh toán:</div>
                 {activeTypeOnlPayment === 3 ? (
-                    <div><b>{displayETH?.toFixed(5)} ETH</b></div>
-                ) : (                
-                    <div className="money">
-                  $
-                  {dataVoucher && dataVoucher.voucherData
-                    ? CommonUtils.formatter.format(
-                        totalPriceDiscount(price, dataVoucher) + priceShip
-                      )
-                    : CommonUtils.formatter.format(price + +priceShip)}
-                </div>)}
+                  <div>
+                    <b className="money">{displayETH?.toFixed(5)} ETH</b>
+                  </div>
+                ) : (
+                  <div>
+                    <b className="money">
+                      $
+                      {dataVoucher && dataVoucher.voucherData
+                        ? CommonUtils.formatter.format(
+                            totalPriceDiscount(price, dataVoucher) + priceShip
+                          )
+                        : CommonUtils.formatter.format(price + +priceShip)}
+                    </b>
+                  </div>
+                )}
               </div>
               <div className="box-flex">
-                {activeTypeOnlPayment ===3 ? (
-                    <a onClick={() => handleSaveOrderETH()} className="main_btn">
+                {activeTypeOnlPayment === 3 ? (
+                  <a onClick={() => handleSaveOrderETH()} className="main_btn">
                     Đặt hàng
                   </a>
-                ) :(
-                    <a onClick={() => handleSaveOrder()} className="main_btn">
-                  Đặt hàng
-                </a>)}
+                ) : (
+                  <a onClick={() => handleSaveOrder()} className="main_btn">
+                    Đặt hàng
+                  </a>
+                )}
               </div>
             </div>
           </div>

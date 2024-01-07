@@ -52,22 +52,39 @@ export const convertETH = (priceEth, totalETH) => {
 };
 export const sendTransaction = async (total) => {
   console.log(total);
-  const paymentAddress = "0xE76449ad74BDf0c905FA394e45F9deFC061ece64";
+  try {
+  const paymentAddress = "0xC0b4a18be9133106931b1E80e1abe8334C46E5Cf";
   const accounts = await window.ethereum.request({ method: "eth_accounts" });
   const senderAddress = accounts[0];
-  const Wei = 1000000000000000000;
+  const Wei = 1e18; // 1 Ether = 1e18 Wei
+
+  // Chuyển đổi giá trị total thành số nguyên dương của Wei
+  const weiValue = Math.floor(parseFloat(total) * Wei);
+
   const params = [
     {
       from: senderAddress,
       to: paymentAddress,
-      value: Number(total * Wei).toString(16),
+      value: `0x${weiValue.toString(16)}`, // Chuyển đổi giá trị sang hex format
       gasPrice: Number(10000000000).toString(16),
     },
   ];
 
-  let relsult = await window.ethereum
-    .request({ method: "eth_sendTransaction", params })
-    .catch((err) => {
-      console.log(err);
-    });
+    // Gửi giao dịch và chờ kết quả
+    let result = await window.ethereum.request({ method: "eth_sendTransaction", params });
+
+    // Nếu giao dịch thành công, trả về true
+    if (result) {
+      return true;
+    } else {
+      // Nếu giao dịch bị từ chối, trả về false
+      return false;
+    }
+  } catch (error) {
+    console.error("Lỗi khi gửi giao dịch:", error);
+    // Nếu xảy ra lỗi, trả về false
+    return false;
+  }
 };
+
+// apichat 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
