@@ -19,6 +19,7 @@ import CommonUtils from "../../utils/CommonUtils";
 function OrderUser(props) {
   const { id } = useParams();
   const [DataOrder, setDataOrder] = useState([]);
+  const [productIdOrder, setProductIdOrder] = useState();
   let price = 0;
   const [priceShip, setpriceShip] = useState(0);
   useEffect(() => {
@@ -33,8 +34,14 @@ function OrderUser(props) {
           for (let i = 0; i < order.data.length; i++) {
             orderArray = concat(orderArray, order.data[i].order);
           }
-
-          setDataOrder(orderArray);
+  
+          setDataOrder(orderArray)
+          // Lấy productId từ orderDetail của mỗi đơn hàng
+          let productIds = orderArray.flatMap(orderItem => 
+            orderItem.orderDetail.map(detail => detail.productId)
+          );
+          setProductIdOrder(productIds)
+          console.log("productIds", productIdOrder);
         }
       };
       fetchOrder();

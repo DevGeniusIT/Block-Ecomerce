@@ -7,8 +7,9 @@ import http from 'http'
 import { sendMessage } from './services/messageService'
 require('dotenv').config();
 process.env['NODE_TLS_REJECT_UNAUTHORIZED'] = 0
-let app = express();
+let app = express(); //Ctreate express instance
 
+//định cấu hình CORS
 app.use(function (req, res, next) {
 
   // Website you wish to allow to connect
