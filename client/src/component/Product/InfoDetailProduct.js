@@ -79,13 +79,13 @@ function InfoDetailProduct(props) {
                                         if (index === 0) {
                                             return (
                                                 <li data-target="#carouselExampleIndicators" data-slide-to={index} className="active">
-                                                    <img height="60px" className="w-100" src={item.image} alt="" />
+                                                    <img height="100px" width="100px" src={item.image} alt="" />
                                                 </li>
                                             )
                                         } else {
                                             return (
                                                 <li data-target="#carouselExampleIndicators" data-slide-to={index} className="">
-                                                    <img height="60px" className="w-100" src={item.image} alt="" />
+                                                    <img height="100px" width="100px" src={item.image} alt="" />
                                                 </li>
                                             )
                                         }

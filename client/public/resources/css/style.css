@@ -2993,7 +2993,7 @@ h6 {
   overflow: hidden;
 }
 .single-product .product-img .p_icon {
-  width: 90%;
+  width: 100%;
   padding: 7px 30px;
   position: absolute;
   bottom: -100px;
@@ -3333,15 +3333,16 @@ h6 {
   position: relative;
 }
 .s_product_img .carousel .carousel-indicators {
+  top: 460px;
   margin: 0px;
   right: 10px;
   width: auto;
-  left: auto;
+  left: 0;
   bottom: 10px;
 }
 .s_product_img .carousel .carousel-indicators li {
-  height: 60px;
-  width: 60px;
+  height: 100px;
+  width: 100px;
   background: transparent;
   text-indent: 0;
   margin-right: 10px;
