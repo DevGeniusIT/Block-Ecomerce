@@ -31,7 +31,7 @@ export const connectToMetaMask = async () => {
 export const getEth = async () => {
   try {
     const url =
-      "https://api.coingecko.com/api/v3/simple/price?ids=ethereum&vs_currencies=vnd";
+      "https://api.coingecko.com/api/v3/simple/price?ids=binancecoin&vs_currencies=vnd";
 
     const res = await axios.get(url);
 
@@ -87,4 +87,3 @@ export const sendTransaction = async (total) => {
   }
 };
 
-// apichat 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

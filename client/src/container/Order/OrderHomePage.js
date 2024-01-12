@@ -91,7 +91,7 @@ function OrderHomePage(props) {
       try {
         const ethereumData = await getEth();
         console.log("Dữ liệu Ethereum:", ethereumData);
-        setPriceEth(ethereumData?.ethereum?.vnd);
+        setPriceEth(ethereumData?.binancecoin?.vnd);
         // Xử lý dữ liệu Ethereum ở đây
       } catch (error) {
         console.error("Lỗi khi lấy dữ liệu Ethereum:", error);
@@ -220,7 +220,8 @@ function OrderHomePage(props) {
         // Nếu người dùng xác nhận, thực hiện hàm handleSaveOrder()
         await handleSaveOrder();
       } else {
-        console.log("lỗi")// Người dùng từ chối, không thực hiện gì cả hoặc có thể xử lý theo nhu cầu
+        toast.error("Giao dịch không thành công!");
+        // Người dùng từ chối, không thực hiện gì cả hoặc có thể xử lý theo nhu cầu
         // Ở đây không thực hiện hành động nào khi từ chối
       }
     } catch (error) {
@@ -237,7 +238,9 @@ function OrderHomePage(props) {
     } else {
       let result = [];
       dataCart.map((item, index) => {
+        console.log("dfgnlsd",item.productData.id);
         let object = {};
+        object.idProduct = item.productData.id;
         object.productId = item.productdetailsizeId;
         object.quantity = item.quantity;
         object.realPrice = item.productDetail.discountPrice;
