@@ -89,6 +89,16 @@ const LoginWebPage = () => {
             phonenumber: inputValues.phonenumber,
             email: inputValues.email
         })
+            // Kiểm tra xem các trường thông tin cần thiết đã được điền vào form hay chưa
+        if (
+            !inputValues.phonenumber ||
+            !inputValues.email ||
+            !inputValues.lastName ||
+            !inputValues.password
+        ) {
+            toast.error('Vui lòng điền đầy đủ thông tin.');
+            return; // Dừng hàm nếu thông tin chưa được điền đầy đủ
+        }
         if (res.isCheck === true) {
             toast.error(res.errMessage)
         } else {
@@ -103,6 +113,8 @@ const LoginWebPage = () => {
                 }, ["isOpen"]: true
             })
         }
+        
+        
 
 
     }
@@ -196,7 +208,7 @@ const LoginWebPage = () => {
                                 <div className="col-sm-6 brand">
                                     <a href="#" className="logo">MR <span>.</span></a>
                                     <div className="heading">
-                                        <h2>Esier</h2>
+                                        <h2>Area</h2>
                                         <p>Sự lựa chọn của bạn</p>
                                     </div>
 
