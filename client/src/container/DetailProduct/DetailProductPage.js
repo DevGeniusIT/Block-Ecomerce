@@ -20,20 +20,20 @@ function DetailProductPage(props) {
   const { id } = useParams();
   const [user, setUser] = useState({});
   const [dataProductRecommend, setdataProductRecommend] = useState([]);
-//   const [isShow, setisShow] = useState(false);
-//   const [DataOrder, setDataOrder] = useState();
+  const [isShow, setisShow] = useState(false);
+  const [DataOrder, setDataOrder] = useState();
   const userState = JSON.parse(localStorage.getItem("userData"));
   const userId = userState.id
   console.log(userId);
 
-//   useEffect(() => {
-//     handleShowReview();
+  useEffect(() => {
+    handleShowReview();
 
-//   }, [DataOrder]);
+  }, [DataOrder]);
 
-//   useEffect(()=>{
-//     fetchOrder()
-//   }, [])
+  useEffect(()=>{
+    fetchOrder()
+  }, [])
 
 
   useEffect(async () => {
@@ -65,31 +65,32 @@ function DetailProductPage(props) {
       setdataProductRecommend(res.data);
     }
   };
-//   let fetchOrder = async () => {
-//     let order = await getAllOrdersByUser(userId);
-//     if (order && order.errCode == 0) {
-//       let orderArray = [];
-//       for (let i = 0; i < order.data.length; i++) {
-//         orderArray = concat(orderArray, order.data[i].order);
-//       }
+  let fetchOrder = async () => {
+    let order = await getAllOrdersByUser(userId);
+    if (order && order.errCode == 0) {
+      let orderArray = [];
+      for (let i = 0; i < order.data.length; i++) {
+        orderArray = concat(orderArray, order.data[i].order);
+      }
 
-//       setDataOrder(orderArray);
-//     }
-//   };
+      setDataOrder(orderArray);
+    }
+  };
+  console.log("jjhfhjds",DataOrder);
 
-//   // Inside your component
-//   let handleShowReview = () => {
-//     DataOrder?.forEach((data) => {
-//         const idOrder = data.orderDetail[0].productId;
-        
-//         if (idOrder === id) {
-//             setisShow(true);
-//         }
-//     });
-//   };
-//   console.log("kkss", DataOrder);
+  // Inside your component
+  let handleShowReview = () => {
+    DataOrder?.forEach((data) => {
+        const idOrder = data.orderDetail[0].idProduct;
 
-//   console.log("kk", isShow);
+        if (idOrder=== Number(id)) {
+            setisShow(true);
+        }
+    });
+  };
+  console.log("kkss", DataOrder);
+
+  console.log("kk", isShow);
 
   return (
     <div>
@@ -188,7 +189,7 @@ function DetailProductPage(props) {
               role="tabpanel"
               aria-labelledby="review-tab"
             >
-              <ReviewProduct />
+              <ReviewProduct isShow={isShow}/>
             </div>
           </div>
         </div>

@@ -8,6 +8,8 @@ import { useParams } from 'react-router';
 import { toast } from 'react-toastify';
 import ReviewModal from './ReviewModal';
 function ReviewProduct(props) {
+    const isShow = props.isShow;
+    console.log("nnn",isShow);
     const { id } = useParams()
     const [inputValues, setInputValues] = useState({
         activeStar: '', imageReview: '', image: '', content: '', user: JSON.parse(localStorage.getItem('userData')), dataReview: [], countStar: {}, isOpen: false,
@@ -179,7 +181,9 @@ function ReviewProduct(props) {
                     </div>
                 </div>
                 <div className="review_list">
-                    {inputValues.user &&
+                    {isShow && (
+                        <div>
+                        {inputValues.user &&
                         <div className="review_item">
                             <div className="form-group">
                                 <label style={{ color: '#333', fontSize: '16px', fontWeight: '600' }}>Viết đánh giá của bạn</label>
@@ -206,7 +210,8 @@ function ReviewProduct(props) {
 
                             </div>
                         </div>
-                    }
+                    }</div>
+                    )}
 
                     {inputValues.dataReview && inputValues.dataReview.length > 0 &&
                         inputValues.dataReview.map((item, index) => {
