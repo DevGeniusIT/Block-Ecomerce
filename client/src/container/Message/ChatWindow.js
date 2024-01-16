@@ -21,7 +21,7 @@ function ChatWindow(props) {
     socketRef.current.on('getId', data => {
       setId(data)
     }) // phần này đơn giản để gán id cho mỗi phiên kết nối vào page. Mục đích chính là để phân biệt đoạn nào là của mình đang chat.
-   
+
     if(props.roomId){
      
       fetchMessage()
@@ -75,7 +75,7 @@ function ChatWindow(props) {
         <div className="ks-header">
           <div className="ks-description">
             <div className="ks-name">Chat name</div>
-            <div className="ks-amount">2 members</div>
+            {/* <div className="ks-amount">2 members</div> */}
           </div>
           <div className="ks-controls">
             <div className="dropdown">
