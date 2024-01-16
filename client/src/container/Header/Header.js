@@ -10,6 +10,7 @@ import socketIOClient from "socket.io-client";
 import { FaEthereum } from "react-icons/fa";
 import { connectMetaMask, connectToMetaMask } from "../../utils/utils";
 import { IoMdClose } from "react-icons/io";
+import { toast } from "react-toastify";
 
 require("dotenv").config();
 const Header = (props) => {
@@ -47,12 +48,16 @@ const Header = (props) => {
   const token = localStorage.getItem("token");
 
   const handleConnect = async () => {
-    const walletInfo = await connectToMetaMask();
-    console.log("Wallet Info:", walletInfo);
-    if (walletInfo) {
-      setWalletAddress(walletInfo);
+
+    if(token){
+      const walletInfo = await connectToMetaMask();
+      console.log("Wallet Info:", walletInfo);
+      if (walletInfo) {
+        setWalletAddress(walletInfo);
+      }
+    }else{
+      toast.error("Vui lòng đăng nhập để kết nối ví!")
     }
-    // Đây là nơi bạn có thể xử lý thông tin của ví sau khi kết nối thành công
   };
 
   const handleDisconnect = () => {
